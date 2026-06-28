@@ -11,6 +11,7 @@ export default defineConfig({
       input: {
         background: resolve(__dirname, 'src/background/index.ts'),
         popup: resolve(__dirname, 'src/popup/index.html'),
+        content: resolve(__dirname, 'src/content/index.ts'),
       },
       output: {
         // Keep entry filenames deterministic (no hash) for the manifest.
