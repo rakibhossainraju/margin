@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "explain-pdf",
+      "name": "margin",
       "devDependencies": {
         "@types/chrome": "^0.0.270",
         "@typescript-eslint/eslint-plugin": "^7.18.0",
