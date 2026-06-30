@@ -24,7 +24,7 @@
       "suggested_key": { "default": "Ctrl+Shift+Y"},
       "description": "Fetch selected text instantly"
     },
-    "execute_browser_action": {
+    "reload-extension": {
       "suggested_key": {
         "default": "Ctrl+Shift+E"
       },

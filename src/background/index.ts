@@ -5,6 +5,7 @@
  */
 
 import {
+  ExtensionCommand,
   MessageHandlers,
   MessageType,
   wrapResponse,
@@ -79,37 +80,57 @@ async function executeInTab<TArgs extends any[], TResult>({
   return executions.map((execution) => execution.result as TResult);
 }
 
-// Commands listener (wiring get-selection command through the bridge)
-chrome.commands.onCommand.addListener(async (command) => {
-  console.log(`[margin:background] command triggered: ${command}`);
-  if (command === 'get-selection') {
-    const tab = await getActiveTab();
-    if (!tab?.id) {
-      console.warn('[margin:background] no active tab found');
-      return;
-    }
-
-    try {
-      const results = await executeInTab({
-        tabId: tab.id,
-        func: () => {
-          return window.marginAPI ? window.marginAPI.getSelectedText() : '';
-        },
-        args: [],
-      });
-
-      // Flatten multi-frame results and select the meaningful (non-empty) result
-      const meaningfulResult = results.find((res) => res && res.trim() !== '') || '';
-      console.log(`[margin:background] get-selection result: "${meaningfulResult}"`);
-    } catch (error) {
-      console.error('[margin:background] failed to execute command get-selection:', error);
-    }
+/**
+ * Handles the get-selection command by executing a selection retrieval script
+ * in the active tab's frames.
+ */
+async function handleGetSelectionCommand(): Promise<void> {
+  const tab = await getActiveTab();
+  if (!tab?.id) {
+    console.warn('[margin:background] no active tab found');
+    return;
   }
-});
 
-chrome.commands.onCommand.addListener((command) => {
-  if (command === "execute_browser_action") {
-    chrome.runtime.reload();
+  try {
+    const results = await executeInTab({
+      tabId: tab.id,
+      func: () => {
+        return window.marginAPI ? window.marginAPI.getSelectedText() : '';
+      },
+      args: [],
+    });
+
+    // Flatten multi-frame results and select the meaningful (non-empty) result
+    const meaningfulResult = results.find((res) => res && res.trim() !== '') || '';
+    console.log(`[margin:background] get-selection result: "${meaningfulResult}"`);
+  } catch (error) {
+    console.error('[margin:background] failed to execute command get-selection:', error);
+  }
+}
+
+/**
+ * Handles the reload-extension command by reloading the browser extension.
+ */
+function handleReloadExtensionCommand(): void {
+  chrome.runtime.reload();
+}
+
+// Commands listener (routing all extension shortcut commands)
+chrome.commands.onCommand.addListener(async (commandString) => {
+  console.log(`[margin:background] command triggered: ${commandString}`);
+  const command = commandString as ExtensionCommand;
+
+  switch (command) {
+    case ExtensionCommand.GET_SELECTION:
+      await handleGetSelectionCommand();
+      break;
+
+    case ExtensionCommand.RELOAD_EXTENSION:
+      handleReloadExtensionCommand();
+      break;
+
+    default:
+      console.warn(`[margin:background] unhandled command: ${commandString}`);
   }
 });
 

@@ -1,3 +1,8 @@
+export enum ExtensionCommand {
+  GET_SELECTION = 'get-selection',
+  RELOAD_EXTENSION = 'reload-extension',
+}
+
 export interface MessageMap {
   PDF_ACTIVATED: {
     request: {
