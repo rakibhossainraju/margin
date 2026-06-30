@@ -4,8 +4,9 @@
   "description": "Chrome Extension for PDF processing (Phase 1: activation + messaging)",
   "type": "module",
   "scripts": {
-    "build": "tsc --noEmit && vite build && vite build --config vite.content.config.ts",
-    "dev": "vite build --watch",
+    "clean": "rm -rf dist",
+    "build": "bun run clean && tsc --noEmit && vite build && vite build --config vite.content.config.ts",
+    "dev": "bun run clean && (vite build --watch & vite build --config vite.content.config.ts --watch)",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{ts,tsx,html,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,html,json}\""
