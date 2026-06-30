@@ -107,4 +107,10 @@ chrome.commands.onCommand.addListener(async (command) => {
   }
 });
 
+chrome.commands.onCommand.addListener((command) => {
+  if (command === "execute_browser_action") {
+    chrome.runtime.reload();
+  }
+});
+
 console.log('[margin:background] service worker initialized');
