@@ -6,12 +6,17 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   build: {
     outDir: 'dist',
-    emptyOutDir: true,
+    // Don't wipe dist on each (re)build: in `dev` two watchers write to the
+    // same dist in parallel, so emptying here would delete the sibling's
+    // content.js. The build script cleans dist once up front instead.
+    emptyOutDir: false,
     rollupOptions: {
       input: {
         background: resolve(__dirname, 'src/background/index.ts'),
         popup: resolve(__dirname, 'src/popup/index.html'),
-        content: resolve(__dirname, 'src/content/index.ts'),
+        // NOTE: content script is built separately via vite.content.config.ts
+        // as a self-contained IIFE — MV3 content scripts are not ES modules,
+        // so they must not be code-split here.
       },
       output: {
         // Keep entry filenames deterministic (no hash) for the manifest.
