@@ -18,5 +18,11 @@
   "action": {
     "default_popup": "src/popup/index.html",
     "default_title": "Margin"
+  },
+  "commands": {
+    "get-selection": {
+      "suggested_key": { "default": "Ctrl+Shift+Y"},
+      "description": "Fetch selected text instantly"
+    }
   }
 }
