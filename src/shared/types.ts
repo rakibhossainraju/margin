@@ -5,12 +5,13 @@
  */
 
 export enum MessageType {
-  PdfActivated = 'PDF_ACTIVATED',
+  PDF_ACTIVATED = 'PDF_ACTIVATED',
+  GET_SELECTED_TEXT = 'GET_SELECTED_TEXT',
 }
 
 /** Sent by the content script when it confirms execution on a PDF page. */
 export interface PdfActivatedMessage {
-  type: MessageType.PdfActivated;
+  type: MessageType.PDF_ACTIVATED;
   url: string;
   timestamp: number;
 }

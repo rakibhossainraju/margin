@@ -27,7 +27,7 @@ function activate(): void {
   );
 
   const message: PdfActivatedMessage = {
-    type: MessageType.PdfActivated,
+    type: MessageType.PDF_ACTIVATED,
     url: window.location.href,
     timestamp: Date.now(),
   };
