@@ -3,7 +3,7 @@
   "name": "Margin",
   "version": "0.1.0",
   "description": "Activates on PDF documents and verifies content/background messaging.",
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "scripting"],
   "background": {
     "service_worker": "background.js",
     "type": "module"

@@ -1,0 +1,32 @@
+export interface MessageMap {
+  PDF_ACTIVATED: {
+    request: {
+      url: string;
+      timestamp: number;
+    };
+    response: {
+      ok: boolean;
+    };
+  };
+}
+
+export type MessageType = keyof MessageMap;
+
+export type MessageRequest<T extends MessageType> = MessageMap[T]['request'];
+export type MessageResponse<T extends MessageType> = MessageMap[T]['response'];
+
+export type ChromeMessage = {
+  [K in MessageType]: {
+    type: K;
+  } & MessageMap[K]['request'];
+}[MessageType];
+
+export interface MarginAPI {
+  getSelectedText: () => string;
+}
+
+declare global {
+  interface Window {
+    marginAPI?: MarginAPI;
+  }
+}

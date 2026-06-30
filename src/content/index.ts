@@ -1,8 +1,8 @@
-import {
-  MessageResponse,
-  MessageType,
-  PdfActivatedMessage,
-} from '../shared/types';
+import * as api from './api';
+import { sendMessage } from '../shared/types';
+
+// Expose API immediately at initialization for background-injected scripts
+window.marginAPI = api;
 
 /**
  * Secondary runtime safeguard. The manifest already restricts injection to
@@ -17,31 +17,24 @@ function isPdfDocument(): boolean {
   return document.contentType === 'application/pdf';
 }
 
-function activate(): void {
+async function activate(): Promise<void> {
   if (!isPdfDocument()) {
     return;
   }
 
   console.log(
-    `[margin:content] content script active on PDF: ${window.location.href}`,
+    `[margin:content] content script active on PDF: ${window.location.href}`
   );
 
-  const message: PdfActivatedMessage = {
-    type: MessageType.PDF_ACTIVATED,
-    url: window.location.href,
-    timestamp: Date.now(),
-  };
-
-  chrome.runtime.sendMessage(message, (response?: MessageResponse) => {
-    if (chrome.runtime.lastError) {
-      console.warn(
-        '[margin:content] message failed:',
-        chrome.runtime.lastError.message,
-      );
-      return;
-    }
+  try {
+    const response = await sendMessage('PDF_ACTIVATED', {
+      url: window.location.href,
+      timestamp: Date.now(),
+    });
     console.log('[margin:content] background acknowledged:', response);
-  });
+  } catch (error) {
+    console.warn('[margin:content] message failed:', error);
+  }
 }
 
 activate();
