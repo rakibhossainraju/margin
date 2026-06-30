@@ -23,6 +23,12 @@
     "get-selection": {
       "suggested_key": { "default": "Ctrl+Shift+Y"},
       "description": "Fetch selected text instantly"
+    },
+    "execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+E"
+      },
+      "description": "Reload the extension"
     }
   }
 }
