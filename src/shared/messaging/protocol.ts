@@ -25,13 +25,3 @@ export type ChromeMessage = {
     type: K;
   } & MessageMap[K]['request'];
 }[MessageType];
-
-export interface MarginAPI {
-  getSelectedText: () => string;
-}
-
-declare global {
-  interface Window {
-    marginAPI?: MarginAPI;
-  }
-}

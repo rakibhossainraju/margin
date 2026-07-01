@@ -31,7 +31,7 @@ function getDefaultRecord<K extends StorageNamespace>(namespace: K): StorageMap[
  * Migration seam invoked on read. No-op in Phase 1 since no prior versions exist.
  */
 function migrate<K extends StorageNamespace>(
-  record: any,
+  record: { version?: string } & Record<string, unknown>,
   namespace: K
 ): StorageMap[K] {
   const currentVersion = chrome.runtime.getManifest().version;
@@ -40,7 +40,7 @@ function migrate<K extends StorageNamespace>(
       `[margin:storage] Migration triggered for ${namespace}. Record version: ${record.version}, current version: ${currentVersion}`
     );
   }
-  return record as StorageMap[K];
+  return record as unknown as StorageMap[K];
 }
 
 /**

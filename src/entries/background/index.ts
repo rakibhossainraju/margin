@@ -1,18 +1,23 @@
-/**
- * Portions of this file are derived from jeromepl/highlighter
- * Copyright (c) 2020 Jérôme Parent-Lévesque
- * Licensed under the MIT License
- */
-
 import {
   ExtensionCommand,
-  MessageHandlers,
   MessageType,
-  wrapResponse,
-} from '../shared/types';
+  MessageRequest,
+  MessageResponse,
+} from '@shared/messaging/protocol';
+import { wrapResponse } from '@infrastructure/messaging';
+import { setupDnrRules } from '@infrastructure/dnr/redirectRules';
+
+type MessageHandler<T extends MessageType> = (
+  request: MessageRequest<T>,
+  sender: chrome.runtime.MessageSender
+) => Promise<MessageResponse<T>> | MessageResponse<T>;
+
+type MessageHandlers = {
+  [K in MessageType]?: MessageHandler<K>;
+};
 
 // Top-level message handlers router mapping
-const handlers: MessageHandlers = {
+const messageHandlers: MessageHandlers = {
   PDF_ACTIVATED: (request, sender) => {
     const tabId = sender.tab?.id;
     console.log(
@@ -28,7 +33,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return false;
   }
 
-  const handler = handlers[message.type as MessageType];
+  const handler = messageHandlers[message.type as MessageType];
   if (handler) {
     try {
       const result = handler(message, sender);
@@ -75,6 +80,11 @@ chrome.commands.onCommand.addListener((command) => {
   if (command === "execute_browser_action") {
     chrome.runtime.reload();
   }
+});
+
+// Initialize dynamic rules
+setupDnrRules().catch((err) => {
+  console.error('[margin:background] Error in setupDnrRules call:', err);
 });
 
 console.log('[margin:background] service worker initialized');

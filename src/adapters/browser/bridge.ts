@@ -1,13 +1,13 @@
 /**
  * Resolves the currently active tab in the last focused window.
  */
-async function getActiveTab(): Promise<chrome.tabs.Tab | undefined> {
+export async function getActiveTab(): Promise<chrome.tabs.Tab | undefined> {
   const queryOptions = { active: true, lastFocusedWindow: true };
   const [tab] = await chrome.tabs.query(queryOptions);
   return tab;
 }
 
-interface ExecuteInTabOptions<TArgs extends any[], TResult> {
+interface ExecuteInTabOptions<TArgs extends unknown[], TResult> {
   tabId: number;
   func: (...args: TArgs) => TResult;
   args: TArgs;
@@ -16,7 +16,7 @@ interface ExecuteInTabOptions<TArgs extends any[], TResult> {
 /**
  * Executes a function in all frames of a given tab using chrome.scripting.executeScript.
  */
-async function executeInTab<TArgs extends any[], TResult>({
+export async function executeInTab<TArgs extends unknown[], TResult>({
   tabId,
   func,
   args,
@@ -29,3 +29,4 @@ async function executeInTab<TArgs extends any[], TResult>({
 
   return executions.map((execution) => execution.result as TResult);
 }
+
