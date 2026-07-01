@@ -7,7 +7,7 @@ ordering or dependencies — this file does. Apply changes in the order below.
 
 | # | Change (apply target) | Depends on | Status |
 |---|------------------------|------------|--------|
-| P1 | `architecture-foundation` | — | ☐ not started |
+| P1 | `architecture-foundation` | — | ☑ done |
 | P2 | `pdfjs-viewer` | P1 | ☐ not started |
 | P3 | `selection-highlight-engine` | P2 | ☐ not started |
 | P4 | `highlight-persistence` | P3, P1 | ☐ not started |

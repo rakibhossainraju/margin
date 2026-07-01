@@ -1,34 +1,75 @@
+/**
+ * Portions of this file are derived from jeromepl/highlighter
+ * Copyright (c) 2020 Jérôme Parent-Lévesque
+ * Licensed under the MIT License
+ */
+
 import {
-  ChromeMessage,
-  MessageResponse,
+  ExtensionCommand,
+  MessageHandlers,
   MessageType,
+  wrapResponse,
 } from '../shared/types';
 
-let tabId: number | undefined;
-
-// Background service worker: listens for verification messages from the
-// content script and logs confirmation, proving bidirectional messaging works.
-chrome.runtime.onMessage.addListener(
-  (
-    message: ChromeMessage,
-    sender: chrome.runtime.MessageSender,
-    sendResponse: (response: MessageResponse) => void,
-  ) => {
-    switch (message.type) {
-      case MessageType.PDF_ACTIVATED:
-        tabId = sender.tab?.id;
-        console.log(
-          `[margin:background] PDF activation confirmed for ${message.url} tabId=${tabId}`,
-        );
-        sendResponse({ ok: true });
-        break;
-      default:
-        sendResponse({ ok: false });
-    }
-    // Response sent synchronously; no need to keep the channel open.
-    return false;
+// Top-level message handlers router mapping
+const handlers: MessageHandlers = {
+  PDF_ACTIVATED: (request, sender) => {
+    const tabId = sender.tab?.id;
+    console.log(
+      `[margin:background] PDF activation confirmed for ${request.url} tabId=${tabId}`
+    );
+    return { ok: true };
   },
-);
+};
+
+// Register a single top-level runtime.onMessage listener
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (!message || typeof message !== 'object' || !message.type) {
+    return false;
+  }
+
+  const handler = handlers[message.type as MessageType];
+  if (handler) {
+    try {
+      const result = handler(message, sender);
+      if (result instanceof Promise) {
+        return wrapResponse(result, sendResponse);
+      } else {
+        sendResponse(result);
+        return false;
+      }
+    } catch (error) {
+      console.error(`Error in handler for ${message.type}:`, error);
+      return false;
+    }
+  }
+
+  // Unknown action, ignore and do not throw
+  return false;
+});
+
+
+/**
+ * Handles the reload-extension command by reloading the browser extension.
+ */
+function handleReloadExtensionCommand(): void {
+  chrome.runtime.reload();
+}
+
+// Commands listener (routing all extension shortcut commands)
+chrome.commands.onCommand.addListener(async (commandString) => {
+  console.log(`[margin:background] command triggered: ${commandString}`);
+  const command = commandString as ExtensionCommand;
+
+  switch (command) {
+    case ExtensionCommand.RELOAD_EXTENSION:
+      handleReloadExtensionCommand();
+      break;
+
+    default:
+      console.warn(`[margin:background] unhandled command: ${commandString}`);
+  }
+});
 
 chrome.commands.onCommand.addListener((command) => {
   if (command === "execute_browser_action") {
