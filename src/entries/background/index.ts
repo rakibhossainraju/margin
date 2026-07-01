@@ -1,9 +1,3 @@
-/**
- * Portions of this file are derived from jeromepl/highlighter
- * Copyright (c) 2020 Jérôme Parent-Lévesque
- * Licensed under the MIT License
- */
-
 import {
   ExtensionCommand,
   MessageType,
