@@ -77,4 +77,42 @@ chrome.commands.onCommand.addListener((command) => {
   }
 });
 
+/**
+ * Dynamically sets up declarativeNetRequest rules to redirect local PDF loads to the viewer.
+ * Dynamic rules allow us to use the runtime extension ID in the redirection URL.
+ */
+async function setupDnrRules(): Promise<void> {
+  const ruleId = 1;
+  const targetRule = {
+    id: ruleId,
+    priority: 1,
+    action: {
+      type: 'redirect',
+      redirect: {
+        regexSubstitution: `chrome-extension://${chrome.runtime.id}/viewer.html?file=file://\\1`,
+      },
+    },
+    condition: {
+      regexFilter: '^file://(.*\\.pdf.*)$',
+      resourceTypes: ['main_frame'],
+    },
+  };
+
+  try {
+    await chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: [ruleId],
+      addRules: [targetRule as any],
+    });
+    console.log('[margin:background] Dynamic DNR rules updated successfully');
+  } catch (error) {
+    console.error('[margin:background] Failed to update dynamic DNR rules:', error);
+  }
+}
+
+// Initialize dynamic rules
+setupDnrRules().catch((err) => {
+  console.error('[margin:background] Error in setupDnrRules call:', err);
+});
+
 console.log('[margin:background] service worker initialized');
+

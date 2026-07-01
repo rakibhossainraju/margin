@@ -1,0 +1,305 @@
+/* Margin PDF Viewer Stylesheet */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #f1f5f9;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* Toolbar styling */
+.toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background-color: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(8px);
+  color: #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+
+.divider {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 18px;
+}
+
+.document-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #cbd5e1;
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toolbar-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(30, 41, 59, 0.7);
+  padding: 4px 12px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.toolbar-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toolbar-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+}
+
+.toolbar-btn:active {
+  transform: scale(0.9);
+}
+
+.text-btn {
+  border-radius: 12px;
+  width: auto;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.zoom-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f8fafc;
+  min-width: 48px;
+  text-align: center;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.page-status {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Main Workspace */
+.viewer-container {
+  margin-top: 56px;
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+  overflow-x: auto;
+  padding: 32px 16px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  scroll-behavior: smooth;
+}
+
+.pdf-viewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+/* Page Card Container */
+.page-container {
+  position: relative;
+  background-color: #ffffff;
+  box-shadow: 
+    0 10px 15px -3px rgba(0, 0, 0, 0.05), 
+    0 4px 6px -4px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.page-container:hover {
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.08), 
+    0 8px 10px -6px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+.page-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Text layer overrides to ensure perfect overlay with standard pdf.js classes */
+.textLayer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  opacity: 1.0;
+  line-height: 1.0;
+  z-index: 2;
+}
+
+/* Error Overlay UI */
+.error-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: opacity 0.3s ease;
+}
+
+.error-overlay.hidden {
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.error-card {
+  background: #ffffff;
+  max-width: 520px;
+  width: 90%;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.error-card h2 {
+  margin: 0 0 12px 0;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.error-card p {
+  color: #475569;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+}
+
+.error-instructions {
+  background-color: #f8fafc;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+}
+
+.error-instructions ol {
+  margin: 0;
+  padding-left: 20px;
+  color: #334155;
+  font-size: 14px;
+}
+
+.error-instructions li {
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.error-instructions li:last-child {
+  margin-bottom: 0;
+}
+
+.select-all {
+  background-color: #e2e8f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.error-note {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.retry-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+}
+
+.retry-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(99, 102, 241, 0.4);
+}
+
+.retry-btn:active {
+  transform: translateY(0);
+}
