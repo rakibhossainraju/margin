@@ -1,5 +1,6 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import {
   watchPublicManifest,
   relocateHtmlAssets,
@@ -9,7 +10,14 @@ import {
 // Multi-input Rollup config (no CRXJS) so each extension entry compiles to a
 // stable, predictable output path that manifest.json can reference directly.
 export default defineConfig({
-  plugins: [watchPublicManifest(), relocateHtmlAssets(), copyPdfJsAssets()],
+  // tsconfigPaths first so the @entries/@core/... aliases (defined once in
+  // tsconfig.json) resolve before the other plugins run.
+  plugins: [
+    tsconfigPaths(),
+    watchPublicManifest(),
+    relocateHtmlAssets(),
+    copyPdfJsAssets(),
+  ],
   build: {
     outDir: 'dist',
     // Don't wipe dist on each (re)build: in `dev` two watchers write to the
@@ -18,9 +26,9 @@ export default defineConfig({
     emptyOutDir: false,
     rollupOptions: {
       input: {
-        background: resolve(__dirname, 'src/background/index.ts'),
-        popup: resolve(__dirname, 'src/popup/index.html'),
-        viewer: resolve(__dirname, 'src/viewer/viewer.html'),
+        background: resolve(__dirname, 'src/entries/background/index.ts'),
+        popup: resolve(__dirname, 'src/entries/popup/index.html'),
+        viewer: resolve(__dirname, 'src/entries/viewer/viewer.html'),
         // NOTE: content script is built separately via vite.content.config.ts
         // as a self-contained IIFE — MV3 content scripts are not ES modules,
         // so they must not be code-split here.

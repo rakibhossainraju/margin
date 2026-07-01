@@ -2,7 +2,7 @@ import {
   MessageType,
   MessageRequest,
   MessageResponse,
-} from './protocol';
+} from '@shared/messaging/protocol';
 
 /**
  * Type-safe wrapper for sending messages from content scripts or popups to the background page.
@@ -35,18 +35,3 @@ export function wrapResponse<T>(
   });
   return true;
 }
-
-/**
- * Type signature for message handler functions.
- */
-export type MessageHandler<T extends MessageType> = (
-  request: MessageRequest<T>,
-  sender: chrome.runtime.MessageSender
-) => Promise<MessageResponse<T>> | MessageResponse<T>;
-
-/**
- * Map of message handlers for the action router.
- */
-export type MessageHandlers = {
-  [K in MessageType]?: MessageHandler<K>;
-};
